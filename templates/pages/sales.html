@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}اختيار نوع المبيعات{% endblock %}
+
+{% block content %}
+    <h2 style="margin-top: 50px;">اختر نوع المبيعات</h2>
+
+    <div class="options" style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 30px;">
+        <a href="{% url 'registration' %}" style="background-color: #28a745; color: white; padding: 15px 25px; text-decoration: none; border-radius: 8px; font-size: 18px;">طيور</a>
+        <a href="#" style="background-color: #28a745; color: white; padding: 15px 25px; text-decoration: none; border-radius: 8px; font-size: 18px;">زرعة</a>
+        <a href="#" style="background-color: #28a745; color: white; padding: 15px 25px; text-decoration: none; border-radius: 8px; font-size: 18px;">أغنام</a>
+        <a href="#" style="background-color: #28a745; color: white; padding: 15px 25px; text-decoration: none; border-radius: 8px; font-size: 18px;">أخرى</a>
+    </div>
+{% endblock %}

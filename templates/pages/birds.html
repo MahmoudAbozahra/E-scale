@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>فورم مبيعات الطيور</h2>
+
+<h2>الوزن الحالي</h2>
+
+{% if saved %}
+  <p><strong>الوزن المحفوظ:</strong> {{ saved_weight }}</p>
+  <p><strong>الوقت:</strong> {{ saved_time }}</p>
+{% else %}
+  <form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">حفظ الوزن الحالي</button>
+  </form>
+{% endif %}
+
+
+
+  
+{% endblock %}
