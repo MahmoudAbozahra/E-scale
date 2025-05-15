@@ -41,14 +41,15 @@ class Car_info(models.Model):
 class ScaleInfo(models.Model):
     weight = models.FloatField()
     created_at = models.DateTimeField(auto_now_add=True)  
-    notes = models.CharField(max_length=500, null=False, blank=False)
+    notes = models.CharField(max_length=500, null=True, blank=True)
 
     def __str__(self):
-        return self.notes
+        return str(self.weight)
     
     
     
-class BirdSale(models.Model):
+class BirdScale(models.Model):
+    
     BIRD_STATUS_CHOICES = [
         ('alive', 'حي'),
         ('dead', 'نافق'),

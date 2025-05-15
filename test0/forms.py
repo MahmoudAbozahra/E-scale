@@ -12,7 +12,7 @@ class LoginForm(AuthenticationForm):
 
 class BirdSaleForm(forms.ModelForm):
     class Meta:
-        model = BirdSale
+        model = BirdScale
         fields = '__all__'
         labels = {
             'bird_status': 'نوع الطيور',
@@ -78,10 +78,13 @@ class ScaleInfoForm(forms.ModelForm):
     class Meta:
         model = ScaleInfo
         fields = ['weight', 'notes']
+        widgets = {
+            'weight': forms.NumberInput(attrs={'id': 'weight-input', 'readonly': 'readonly'}),
+        }
         labels = {
             'weight': 'الوزن الاول ',
             'created_at': 'وقت الميزان',
             'notes': 'ملاحظات',
         }
-    weight = forms.FloatField(disabled=True)
+
     

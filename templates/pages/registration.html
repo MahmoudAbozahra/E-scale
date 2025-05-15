@@ -1,19 +1,68 @@
 {% extends "base.html" %}
-
 {% block content %}
-  <h2>فورم مبيعات الطيور</h2>
 
-  <form method="post">
-    {% csrf_token %}
-    {% for field in form %}
-        <div style="margin-bottom: 20px;">
-            {{ field.label_tag }}
-            {{ field }}
-            {% for error in field.errors %}
-                <p style="color: red;">{{ error }}</p>
-            {% endfor %}
-        </div>
-    {% endfor %}
-    <button type="submit">حفظ</button>
-  </form>
+<div style="display: flex; gap: 20px;">
+
+  <!-- الفورمات -->
+  <div style="flex: 3; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+
+    <div style="border: 1px solid #ccc; padding: 15px; border-radius: 10px;">
+      <h3>نموذج العميل</h3>
+      <form method="post">
+        {% csrf_token %}
+        {{ clint_form.as_p }}
+        <button type="submit" name="save_clint">حفظ العميل مؤقتًا</button>
+      </form>
+    </div>
+
+    <div style="border: 1px solid #ccc; padding: 15px; border-radius: 10px;">
+      <h3>نموذج الوزن</h3>
+      <form method="post">
+        {% csrf_token %}
+        {{ scale_form.as_p }}
+        <button type="submit" name="save_scale">حفظ الوزن مؤقتًا</button>
+      </form>
+    </div>
+
+    <div style="border: 1px solid #ccc; padding: 15px; border-radius: 10px;">
+      <h3>نموذج السيارة</h3>
+      <form method="post">
+        {% csrf_token %}
+        {{ car_form.as_p }}
+        <button type="submit" name="save_car">حفظ السيارة مؤقتًا</button>
+      </form>
+    </div>
+
+  </div>
+
+  <!-- الشريط الجانبي -->
+  <div style="flex: 1; border: 2px solid #333; padding: 20px; border-radius: 10px; height: fit-content;">
+    <h4>بيانات إضافية</h4>
+    <textarea rows="8" style="width: 100%;" placeholder="ملاحظات..."></textarea>
+    <br><br>
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit" name="print_ticket" style="background: green; color: white; padding: 10px 20px; border: none; border-radius: 5px;">طباعة التذكرة</button>
+    </form>
+  </div>
+
+</div>
+
+<script>
+  const weightInput = document.getElementById('weight-input');
+  const socket = new WebSocket('ws://' + window.location.host + '/ws/scale/');
+  socket.onmessage = function(event) {
+    const data = JSON.parse(event.data);
+    if (data.weight !== undefined && weightInput) {
+      weightInput.value = data.weight;
+    } else if (data.error && weightInput) {
+      weightInput.value = '';
+      alert('خطأ في قراءة الوزن: ' + data.error);
+    }
+  };
+  socket.onclose = function() {
+    alert('تم قطع الاتصال بالميزان');
+  };
+</script>
+
 {% endblock %}
