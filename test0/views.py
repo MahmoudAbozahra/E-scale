@@ -79,10 +79,7 @@ def clint_file(request):
             form.save()
             messages.success(request, "تم الحفظ بنجاح.")
 
-            # ملاحظة: Clint_file غير معرف هنا، لو عايز تتأكد من التصنيف:
-            # يمكنك تعديلها بالشكل التالي لو عايز شرط معين بناءً على البيانات:
-            # if form.cleaned_data.get('category') == 'طيور':
-            #     return redirect('birds')
+            
 
             return redirect('birds')
     else:
@@ -91,7 +88,7 @@ def clint_file(request):
     return render(request, 'pages/birds.html', {'form': form})
 
 
-# ---- Registration View (مع حفظ البيانات مؤقتًا في Session) ----
+# ---- Registration View ----
 def registration_view(request):
     if request.method == 'POST':
         if 'print_ticket' in request.POST:
@@ -101,9 +98,8 @@ def registration_view(request):
             bird_form = BirdSaleForm(request.POST)
 
             if all([clint_form.is_valid(), scale_form.is_valid(), car_form.is_valid(), bird_form.is_valid()]):
-                # حفظ العميل، السيارة، الوزن، التذكرة (الوزن هنا محفوظ مع التاريخ created_at تلقائي)
                 clint_instance = clint_form.save()
-                scale_instance = scale_form.save()  # الوزن هنا بيتحفظ في الداتا بيز + created_at تلقائي
+                scale_instance = scale_form.save()  
                 car_instance = car_form.save()
                 bird_instance = bird_form.save(commit=False)
                 bird_instance.car = car_instance
@@ -120,10 +116,8 @@ def registration_view(request):
                 messages.error(request, "هناك خطأ في البيانات، يرجى التحقق.")
             
         else:
-            # الضغط على إضافة وزن لا يفعل الحفظ
             return redirect('registration')
 
-    # في حالة GET نهيئ الفورمات خالية أو بقيم فارغة
     clint_form = ClintFileForm()
     car_form = CarInfoForm()
     scale_form = ScaleInfoForm()
