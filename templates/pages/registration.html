@@ -1,68 +1,108 @@
 {% extends "base.html" %}
+{% load static %}
 {% block content %}
 
-<div style="display: flex; gap: 20px;">
 
-  <!-- الفورمات -->
-  <div style="flex: 3; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
 
-    <div style="border: 1px solid #ccc; padding: 15px; border-radius: 10px;">
-      <h3>نموذج العميل</h3>
-      <form method="post">
-        {% csrf_token %}
-        {{ clint_form.as_p }}
-        <button type="submit" name="save_clint">حفظ العميل مؤقتًا</button>
-      </form>
-    </div>
 
-    <div style="border: 1px solid #ccc; padding: 15px; border-radius: 10px;">
-      <h3>نموذج الوزن</h3>
-      <form method="post">
-        {% csrf_token %}
-        {{ scale_form.as_p }}
-        <button type="submit" name="save_scale">حفظ الوزن مؤقتًا</button>
-      </form>
-    </div>
+<div class="container-fluid mt-4">
+  <form method="post">
+    {% csrf_token %}
+    <div class="row">
 
-    <div style="border: 1px solid #ccc; padding: 15px; border-radius: 10px;">
-      <h3>نموذج السيارة</h3>
-      <form method="post">
-        {% csrf_token %}
-        {{ car_form.as_p }}
-        <button type="submit" name="save_car">حفظ السيارة مؤقتًا</button>
-      </form>
-    </div>
+      <!-- الشريط الجانبي -->
+      <div class="col-md-3" style="text-align: right;">
+        <div class="card shadow sticky-top" style="top: 20px;">
+          <div class="card-body">
+            <h5 class="card-title">📋التذكرة</h5>
+            {{ bird_form.as_p }}
+            <button type="submit" name="print_ticket" class="btn btn-success w-100">حفظ التذكرة</button>
+          </div>
+        </div>
+      </div>
 
-  </div>
+      <!-- الفورمات -->
+      <div class="col-md-9" style="text-align: right;">
+        <div class="card shadow mb-4">
+          <div class="card-body">
+            <div class="row g-4">
 
-  <!-- الشريط الجانبي -->
-  <div style="flex: 1; border: 2px solid #333; padding: 20px; border-radius: 10px; height: fit-content;">
-    <h4>بيانات إضافية</h4>
-    <textarea rows="8" style="width: 100%;" placeholder="ملاحظات..."></textarea>
-    <br><br>
-    <form method="post">
-      {% csrf_token %}
-      <button type="submit" name="print_ticket" style="background: green; color: white; padding: 10px 20px; border: none; border-radius: 5px;">طباعة التذكرة</button>
-    </form>
-  </div>
+              <!-- نموذج العميل -->
+              <div class="col-md-6">
+                <div class="card border-primary h-100">
+                  <div class="card-header bg-primary text-white">👤 نموذج العميل</div>
+                  <div class="card-body">
+                    {{ clint_form.as_p }}
+                  </div>
+                </div>
+              </div>
 
-</div>
+              <!-- نموذج السيارة -->
+              <div class="col-md-6">
+                <div class="card border-primary h-100">
+                  <div class="card-header bg-primary text-white">🚗 نموذج السيارة</div>
+                  <div class="card-body">
+                    {{ car_form.as_p|safe }}
+                  </div>
+                </div>
+              </div>
+              
+              <!-- نموذج الوزن -->
+              <div class="col-12">
+                <div class="card border-primary h-100">
+                  <div class="card-header bg-primary text-white">⚖️ نموذج الوزن</div>
+                  <div class="card-body">
+                    {{ scale_form.as_p }}
+                    <button type="button" id="copy-weight-btn" class="btn btn-success w-10">نسخ الوزن</button>
+                  </div>
+                </div>
+              </div>
+
+            </div> <!-- /row -->
+          </div> <!-- /card-body -->
+        </div> <!-- /card -->
+      </div> <!-- /col -->
+
+    </div> <!-- /row -->
+  </form> <!-- form واحدة هنا -->
+
+</div> <!-- /container -->
+
 
 <script>
   const weightInput = document.getElementById('weight-input');
-  const socket = new WebSocket('ws://' + window.location.host + '/ws/scale/');
+  const carWeightInput = document.getElementById('first_wieght');
+  const ticketWeightInput = document.getElementById('ticket_weight');
+  const copyBtn = document.getElementById('copy-weight-btn');
+  const timeDiv = document.getElementById('weight-added-time');
+  const timeInput = document.getElementById('sample_time'); 
+
+  let socket = new WebSocket('ws://' + window.location.host + '/ws/scale/');
+
   socket.onmessage = function(event) {
     const data = JSON.parse(event.data);
     if (data.weight !== undefined && weightInput) {
       weightInput.value = data.weight;
-    } else if (data.error && weightInput) {
-      weightInput.value = '';
-      alert('خطأ في قراءة الوزن: ' + data.error);
     }
   };
-  socket.onclose = function() {
-    alert('تم قطع الاتصال بالميزان');
-  };
+
+copyBtn.addEventListener('click', () => {
+  if (weightInput && carWeightInput && ticketWeightInput && timeInput) {
+    carWeightInput.value = weightInput.value;
+    ticketWeightInput.value = weightInput.value;
+
+    const now = new Date();
+    const formattedDate = now.toLocaleString('ar-EG', { hour12: true });
+
+    timeInput.value = formattedDate;  // ✨ حطينا التاريخ في المربع
+    socket.close();
+  } else {
+    alert('لم يتم العثور على الحقول المطلوبة.');
+  }
+});
+  // عند تحميل الصفحة، تفتح WebSocket من جديد (تلقائياً)
 </script>
+
+
 
 {% endblock %}
